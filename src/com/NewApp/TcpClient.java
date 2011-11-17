@@ -35,7 +35,7 @@ public class TcpClient {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		

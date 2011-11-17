@@ -39,12 +39,12 @@ public class MainActivity extends Activity {
 	private final int POSTURE = 0x103;
 	private final int PEAK_ACCLERATION = 0x104;
 	LinkedList<Float> values = new LinkedList<Float>();
-	String[] verlabels = new String[] { "alfa", "beta", "gamma" };
+	String[] verlabels = new String[] { "", "", "" };
 	String[] horlabels = new String[] { "1", "2",  "3", "4", "5", "6", "7", "8", "9", "10"};
 	float[] floatarray = new float[] {80.0f, 100.0f, 80.0f, 100.0f, 80.0f, 100.0f, 80.0f, 100.0f, 80.0f,100.0f};
 	GraphView gw;
-	MediaPlayer alarmPlayer = MediaPlayer.create(this, R.raw.alarm);
-	MediaPlayer warmingPlayer = MediaPlayer.create(this, R.raw.alarm);
+	MediaPlayer alarmPlayer;
+	MediaPlayer warningPlayer;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +62,11 @@ public class MainActivity extends Activity {
         EditText et = (EditText) findViewById(R.id.labelStatusMsg);
 		String ErrorText  = "Enter server IPs";
 		 et.setText(ErrorText);
+		 
+		 // Initiate media players
+		 alarmPlayer = MediaPlayer.create(this, R.raw.alarm);
+		 warningPlayer = MediaPlayer.create(this, R.raw.warning);
+		 alarmPlayer.setLooping(true);
 		 
 		 //Fill value list with some data
 		 for(int i = 0; i<10; i++){
@@ -144,6 +149,7 @@ public class MainActivity extends Activity {
 				@Override
 				/*Functionality to act if the button DISCONNECT is touched*/
 				public void onClick(View v) {
+					alarmPlayer.pause();
 					// TODO Auto-generated method stub
 					/*Reset the global variables*/
 					EditText et = (EditText) findViewById(R.id.labelStatusMsg);
@@ -209,23 +215,42 @@ public class MainActivity extends Activity {
     		switch (msg.what)
     		{
     		case HEART_RATE:
+    			// Convert to Int from String
     			String HeartRatetext = msg.getData().getString("HeartRate");
-    			tv = (TextView)findViewById(R.id.labelHeartRate);
     			System.out.println("Heart Rate Info is "+ HeartRatetext);
+    			// Grab GUI element
+    			tv = (TextView)findViewById(R.id.labelHeartRate);
     			if (tv != null)tv.setText(HeartRatetext);
     			Integer hr = Integer.parseInt(HeartRatetext);
+    			//Push to graph
     			float hrf = hr.floatValue();
-    			values.add(hrf);
-    			values.remove();
+    			values.addFirst(hrf);
+    			values.removeLast();
     			float[] farray = new float[10];
     			for (int b = 0; b<10; b++){
-    				farray[b] = values.get(b);
+    				farray[b] = 240 - values.get(b);
+    				System.err.print(values.get(b));
     			}
     			gw.values = farray;
     			gw.invalidate();
-    			if (hr > 200 | hr < 50 ){
-    			
-    			alarmPlayer.start(); // no need to call prepare(); create() does that for you
+    			if (values.get(0) > 200.0f && values.get(1) <= 200.0f ){
+    				alarmPlayer.start(); 
+    				System.err.print("Start");
+    			}
+    			else if (values.get(0) < 60.0f && values.get(1) >= 60.0f ){
+    				alarmPlayer.start();
+    				System.err.print("Start");
+    			}
+    			else if (values.get(0) < 200.0f && values.get(1) >= 200.0f ){
+    				alarmPlayer.pause();
+    				System.err.print("Stop");
+    			}
+    			else if (values.get(0) > 60.0f && values.get(1) <= 60.0f ){
+    				alarmPlayer.pause();
+    				System.err.print("Stop");
+    			}
+    			if (Math.abs(values.get(1) - values.get(0)) > 5.0f){
+    				warningPlayer.start();
     			}
     			
     			
