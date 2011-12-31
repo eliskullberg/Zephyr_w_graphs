@@ -18,11 +18,10 @@ public class NewConnectedListener extends ConnectListenerImpl
 	final int RtoR_MSG_ID = 0x24;
 	final int ACCEL_100mg_MSG_ID = 0x2A;
 	final int SUMMARY_MSG_ID = 0x2B;
-	static String ip = "";
+	
 	
 	private int GP_HANDLER_ID = 0x20;
-	TcpClient client = new TcpClient("130.229.190.111", 9990);
-	//TcpClient client = new TcpClient("130.229.159.168", 9898);
+	
 	private final int HEART_RATE = 0x100;
 	private final int RESPIRATION_RATE = 0x101;
 	private final int SKIN_TEMPERATURE = 0x102;
@@ -49,9 +48,8 @@ public class NewConnectedListener extends ConnectListenerImpl
 		System.out.println(String.format("Connected to BioHarness %s.", eventArgs.getSource().getDevice().getName()));
 		/*Use this object to enable or disable the different Packet types*/
 		RqPacketType.GP_ENABLE = true;
-		RqPacketType.BREATHING_ENABLE = false;
-		RqPacketType.ECG_ENABLE = true;
-		RqPacketType.LOGGING_ENABLE = false;
+		RqPacketType.BREATHING_ENABLE = true;
+		RqPacketType.LOGGING_ENABLE = true;
 		
 		
 		//Creates a new ZephyrProtocol object and passes it the BTComms object
@@ -67,18 +65,8 @@ public class NewConnectedListener extends ConnectListenerImpl
 				
 				CRCFailStatus = msg.getCRCStatus();
 				RcvdBytes = msg.getNumRvcdBytes() ;
-				Integer MsgID = msg.getMsgID();
-				byte [] DataArray = msg.getBytes();
-				byte [] newarray = new byte[DataArray.length +1];
-				newarray[0] = MsgID.byteValue();
-				for (int i = 1; i <= DataArray.length; i++){
-					newarray[i] = DataArray[i-1];
-				}
-				
-				
-				//SEND 
-				System.err.println("Sending a packet to server");
-				client.send(newarray);
+				int MsgID = msg.getMsgID();
+				byte [] DataArray = msg.getBytes();	
 				switch (MsgID)
 				{
 
@@ -144,7 +132,7 @@ public class NewConnectedListener extends ConnectListenerImpl
 					break;
 				case ECG_MSG_ID:
 					/*Do what you want. Printing Sequence Number for now*/
-					System.out.println("ECG Packet Sequence Number is "+ECGInfoPacket.GetECGSamples(DataArray).toString());
+					System.out.println("ECG Packet Sequence Number is "+ECGInfoPacket.GetSeqNum(DataArray));
 					break;
 				case RtoR_MSG_ID:
 					/*Do what you want. Printing Sequence Number for now*/

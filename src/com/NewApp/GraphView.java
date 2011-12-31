@@ -9,6 +9,7 @@ import android.view.View;
 
 /**
  * GraphView creates a scaled line or bar graph with x and y axis labels. 
+ * Totally unedited, except for different colors, and hardcoded min/max. 
  * @author Arno den Hond
  *
  */
@@ -64,7 +65,7 @@ public class GraphView extends View {
 			paint.setColor(Color.WHITE);
 			float y = ((graphheight / vers) * i) + border;
 			canvas.drawLine(horstart, y, width, y, paint);
-			paint.setColor(Color.RED);
+			paint.setColor(Color.BLACK);
 			canvas.drawText(verlabels[i], 0, y, paint);
 		}
 		int hors = horlabels.length - 1;
@@ -77,7 +78,7 @@ public class GraphView extends View {
 				paint.setTextAlign(Align.RIGHT);
 			if (i==0)
 				paint.setTextAlign(Align.LEFT);
-			paint.setColor(Color.RED);
+			paint.setColor(Color.BLACK);
 			canvas.drawText(horlabels[i], x, height - 4, paint);
 		}
 
@@ -85,7 +86,7 @@ public class GraphView extends View {
 		canvas.drawText(title, (graphwidth / 2) + horstart, border - 4, paint);
 
 		if (max != min) {
-			paint.setColor(Color.RED);
+			paint.setColor(Color.LTGRAY);
 			if (type == BAR) {
 				float datalength = values.length;
 				float colwidth = (width - (2 * border)) / datalength;
@@ -118,7 +119,7 @@ public class GraphView extends View {
 			if (values[i] > largest)
 				largest = values[i];
 		//return largest;
-		return 60;
+		return 220;
 	}
 
 	private float getMin() {
@@ -127,7 +128,7 @@ public class GraphView extends View {
 			if (values[i] < smallest)
 				smallest = values[i];
 		//return smallest;
-		return 220;
+		return 60;
 	}
 
 }
